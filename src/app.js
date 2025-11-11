@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import analyticsRoutes from "./routes/analytics.routes.js";
+import submissionRoutes from "./routes/submission.routes.js";
 import cors from "cors";
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(
 
 app.use(bodyParser.json());
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/submissions", submissionRoutes);
 
 
 export default app;
