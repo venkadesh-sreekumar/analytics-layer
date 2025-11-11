@@ -208,6 +208,212 @@ GET /analytics/full/1
 
 ---
 
+## Advanced Analytics Endpoints
+
+### Get Advanced Analytics (All User Event Data)
+**GET** `/advancedAnalytics/:formId`
+
+Get detailed user-level event tracking for a form. Returns all users grouped by form with their complete event history.
+
+**Example:**
+```
+GET /advancedAnalytics/1
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "formId": "1",
+    "totalUsers": 5,
+    "totalEvents": 250,
+    "lastUpdated": "2025-11-11T23:04:57.716Z",
+    "users": [
+      {
+        "userId": "user123",
+        "totalEvents": 50,
+        "firstEvent": "2025-11-11T22:00:00.000Z",
+        "lastEvent": "2025-11-11T23:00:00.000Z",
+        "sessionDuration": 3600,
+        "eventsByType": {
+          "focus": 15,
+          "blur": 15,
+          "change": 20
+        },
+        "fieldInteractions": {
+          "email-1762810408574": {
+            "fieldLabel": "Email",
+            "count": 10
+          },
+          "name-1762814811406": {
+            "fieldLabel": "Name",
+            "count": 8
+          }
+        },
+        "events": [
+          {
+            "eventType": "focus",
+            "fieldId": "email-1762810408574",
+            "fieldLabel": "Email",
+            "value": null,
+            "timestamp": "2025-11-11T22:11:51.981Z"
+          },
+          {
+            "eventType": "change",
+            "fieldId": "email-1762810408574",
+            "fieldLabel": "Email",
+            "value": "test@email.com",
+            "timestamp": "2025-11-11T22:11:52.096Z"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Data Structure:**
+- **Form Level**: Total users, total events, last update time
+- **User Level**: 
+  - User ID and session information
+  - Event counts by type (focus, blur, change, etc.)
+  - Field interaction counts
+  - Complete event timeline sorted by timestamp
+  - Session duration in seconds
+
+**Use Cases:**
+- Track individual user behavior patterns
+- Identify users who struggle with specific fields
+- Analyze user journey through the form
+- Debug user-specific issues
+- Build user session replays
+
+---
+
+### Get User-Specific Analytics
+**GET** `/advancedAnalytics/:formId/user/:userId`
+
+Get detailed analytics for a specific user within a form.
+
+**Example:**
+```
+GET /advancedAnalytics/1/user/user123
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "formId": "1",
+    "userId": "user123",
+    "totalEvents": 50,
+    "firstEvent": "2025-11-11T22:00:00.000Z",
+    "lastEvent": "2025-11-11T23:00:00.000Z",
+    "sessionDuration": 3600,
+    "eventsByType": {
+      "focus": 15,
+      "blur": 15,
+      "change": 20
+    },
+    "fieldInteractions": {
+      "email-1762810408574": {
+        "fieldLabel": "Email",
+        "interactions": [
+          {
+            "eventType": "focus",
+            "value": null,
+            "timestamp": "2025-11-11T22:11:51.981Z"
+          },
+          {
+            "eventType": "change",
+            "value": "s",
+            "timestamp": "2025-11-11T22:11:52.096Z"
+          }
+        ]
+      }
+    },
+    "eventTimeline": [
+      {
+        "eventType": "focus",
+        "fieldId": "email-1762810408574",
+        "fieldLabel": "Email",
+        "value": null,
+        "timestamp": "2025-11-11T22:11:51.981Z"
+      }
+    ]
+  }
+}
+```
+
+**Use Cases:**
+- Debug specific user issues
+- Understand individual user behavior
+- Provide personalized support
+- Analyze user session details
+
+---
+
+### Get Form Analytics Summary
+**GET** `/advancedAnalytics/:formId/summary`
+
+Get high-level summary statistics for a form.
+
+**Example:**
+```
+GET /advancedAnalytics/1/summary
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "formId": "1",
+    "summary": {
+      "totalUsers": 25,
+      "activeUsers": 23,
+      "totalEvents": 500,
+      "averageEventsPerUser": 21.74,
+      "averageSessionDuration": 45.5,
+      "lastUpdated": "2025-11-11T23:04:57.716Z"
+    },
+    "eventTypeDistribution": {
+      "focus": 150,
+      "blur": 145,
+      "change": 200,
+      "submit": 5
+    },
+    "topUsers": [
+      {
+        "userId": "user123",
+        "totalEvents": 50,
+        "lastActive": "2025-11-11T23:00:00.000Z"
+      },
+      {
+        "userId": "user456",
+        "totalEvents": 45,
+        "lastActive": "2025-11-11T22:55:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+**Metrics Provided:**
+- **Summary Stats**: Total/active users, events, averages
+- **Event Distribution**: Count of each event type across all users
+- **Top Users**: Most active users by event count
+
+**Use Cases:**
+- Dashboard overview
+- Quick form health check
+- Identify power users
+- Monitor overall engagement
+
+---
+
 ## Submission Endpoints
 
 ### Submit Form
@@ -429,6 +635,21 @@ curl http://localhost:4000/api/analytics/events/1
 8. **Get full combined analytics**:
 ```bash
 curl http://localhost:4000/api/analytics/full/1
+```
+
+9. **Get advanced analytics (all user event data)**:
+```bash
+curl http://localhost:4000/api/advancedAnalytics/1
+```
+
+10. **Get analytics for a specific user**:
+```bash
+curl http://localhost:4000/api/advancedAnalytics/1/user/user123
+```
+
+11. **Get form analytics summary**:
+```bash
+curl http://localhost:4000/api/advancedAnalytics/1/summary
 ```
 
 ---
