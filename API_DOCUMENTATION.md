@@ -35,6 +35,179 @@ Track user interactions with forms (focus, blur, change events, etc.)
 
 ---
 
+### Get Submission Analytics
+**GET** `/analytics/submissions/:formId`
+
+Get comprehensive analytics from the submissions collection for a specific form.
+
+**Example:**
+```
+GET /analytics/submissions/1
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "formId": "1",
+    "overview": {
+      "totalSubmissions": 25,
+      "uniqueUsers": 18,
+      "firstSubmission": "2025-11-10T10:00:00.000Z",
+      "lastSubmission": "2025-11-11T22:39:37.309Z"
+    },
+    "completionTime": {
+      "average": 42.5,
+      "minimum": 15.2,
+      "maximum": 120.8,
+      "unit": "seconds"
+    },
+    "submissionsByDate": {
+      "2025-11-10": 10,
+      "2025-11-11": 15
+    },
+    "fieldAnalytics": {
+      "name": {
+        "totalResponses": 25,
+        "emptyResponses": 0,
+        "completionRate": 100,
+        "uniqueValues": 23,
+        "topValues": [
+          { "value": "John Doe", "count": 2, "percentage": 8 }
+        ]
+      },
+      "email": {
+        "totalResponses": 24,
+        "emptyResponses": 1,
+        "completionRate": 96,
+        "uniqueValues": 24,
+        "topValues": []
+      }
+    },
+    "recentSubmissions": [
+      {
+        "id": "673258a9e4b9c8d1f2a3b4c5",
+        "userId": "user123",
+        "timestamp": "2025-11-11T22:39:37.309Z",
+        "completionTime": 45.5
+      }
+    ]
+  }
+}
+```
+
+**Metrics Provided:**
+- **Overview**: Total submissions, unique users, first/last submission timestamps
+- **Completion Time**: Average, minimum, and maximum completion times
+- **Submissions by Date**: Daily submission counts
+- **Field Analytics**: Per-field statistics including:
+  - Total and empty responses
+  - Completion rate
+  - Number of unique values
+  - Top 5 most common values with counts and percentages
+- **Recent Submissions**: Last 5 submissions with basic info
+
+---
+
+### Get Event Analytics
+**GET** `/analytics/events/:formId`
+
+Get analytics from the events collection (focus, blur, change events) for a specific form.
+
+**Query Parameters:**
+- `eventType` (optional) - Filter by specific event type (e.g., "focus", "blur", "change")
+
+**Example:**
+```
+GET /analytics/events/1
+GET /analytics/events/1?eventType=focus
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "formId": "1",
+    "eventType": "all",
+    "overview": {
+      "totalEvents": 250,
+      "uniqueUsers": 15,
+      "firstEvent": "2025-11-10T10:00:00.000Z",
+      "lastEvent": "2025-11-11T22:39:37.309Z"
+    },
+    "eventsByType": {
+      "focus": 80,
+      "blur": 80,
+      "change": 90
+    },
+    "eventsByHour": {
+      "2025-11-11T22:00:00Z": 45,
+      "2025-11-11T21:00:00Z": 30
+    },
+    "fieldInteractions": {
+      "email-1762810408574": {
+        "fieldLabel": "Email",
+        "interactions": 50,
+        "eventTypes": {
+          "focus": 15,
+          "blur": 15,
+          "change": 20
+        }
+      }
+    }
+  }
+}
+```
+
+**Metrics Provided:**
+- **Overview**: Total events, unique users, time range
+- **Events by Type**: Count of each event type (focus, blur, change, etc.)
+- **Events by Hour**: Hourly event distribution
+- **Field Interactions**: Per-field interaction statistics
+
+---
+
+### Get Full Analytics
+**GET** `/analytics/full/:formId`
+
+Get combined analytics including both submission and event data.
+
+**Example:**
+```
+GET /analytics/full/1
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "formId": "1",
+    "submissions": {
+      "formId": "1",
+      "overview": { ... },
+      "completionTime": { ... },
+      "submissionsByDate": { ... },
+      "fieldAnalytics": { ... },
+      "recentSubmissions": [ ... ]
+    },
+    "events": {
+      "formId": "1",
+      "overview": { ... },
+      "eventsByType": { ... },
+      "eventsByHour": { ... },
+      "fieldInteractions": { ... }
+    }
+  }
+}
+```
+
+**Use Case:** Get a complete picture of form performance including both final submissions and user interaction patterns.
+
+---
+
 ## Submission Endpoints
 
 ### Submit Form
@@ -241,6 +414,21 @@ curl http://localhost:4000/api/submissions/form/1
 5. **View form statistics**:
 ```bash
 curl http://localhost:4000/api/submissions/form/1/stats
+```
+
+6. **Get submission analytics**:
+```bash
+curl http://localhost:4000/api/analytics/submissions/1
+```
+
+7. **Get event analytics**:
+```bash
+curl http://localhost:4000/api/analytics/events/1
+```
+
+8. **Get full combined analytics**:
+```bash
+curl http://localhost:4000/api/analytics/full/1
 ```
 
 ---
