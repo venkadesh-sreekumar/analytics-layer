@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
   mongo:
     image: mongo:6
@@ -8,27 +9,43 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    command: ["mongod", "--quiet", "--logpath", "/dev/null"]
 
   redis:
-    image: redis:7
+    image: redis:7-alpine
     container_name: redis
     restart: always
     ports:
       - "6379:6379"
+    command: ["redis-server", "--save", ""]
 
   node-app:
     build: .
     container_name: analytics-node
     restart: always
+    depends_on:
+      - mongo
+      - redis
     ports:
       - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URL=mongodb://mongo:27017/analytics
+      - REDIS_URL=redis://redis:6379
+    command: ["node", "src/server.js"]
+
+  worker:
+    build: .
+    container_name: analytics-worker
+    restart: always
     depends_on:
       - mongo
       - redis
     environment:
+      - NODE_ENV=production
       - MONGO_URL=mongodb://mongo:27017/analytics
       - REDIS_URL=redis://redis:6379
-    command: ["npm", "start"]
+    command: ["node", "src/queue/workers/analyticsWorker.js"]
 
 volumes:
   mongo-data:
