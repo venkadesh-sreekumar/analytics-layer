@@ -1,20 +1,34 @@
-version: "3.8"
+version: "3.9"
 services:
-  mongodb:
+  mongo:
     image: mongo:6
-    container_name: analytics-mongo
+    container_name: mongo
     restart: always
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/data/db
+      - mongo-data:/data/db
 
   redis:
     image: redis:7
-    container_name: analytics-redis
+    container_name: redis
     restart: always
     ports:
       - "6379:6379"
 
+  node-app:
+    build: .
+    container_name: analytics-node
+    restart: always
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/analytics
+      - REDIS_URL=redis://redis:6379
+    command: ["npm", "start"]
+
 volumes:
-  mongo_data:
+  mongo-data:
