@@ -8,7 +8,7 @@ import { analyticsQueue } from "../queue/index.js";
 
 export const submitForm = async (req, res) => {
   try {
-    const { formId, userId, submittedData, metadata, timestamp } = req.body;
+    const { formId, userId, submittedData, metadata, timestamp, completionTime } = req.body;
 
     // Validate required fields
     if (!formId || !submittedData) {
@@ -25,6 +25,7 @@ export const submitForm = async (req, res) => {
       submittedData,
       metadata: {
         ...metadata,
+        completionTime,
         userAgent: req.headers['user-agent'],
         ipAddress: req.ip || req.connection.remoteAddress,
       }
