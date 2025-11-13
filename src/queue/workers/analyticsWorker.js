@@ -10,7 +10,6 @@ const worker = new Worker(
   "analytics-events",
   async (job) => {
     const { formId, userId, eventType, value, fieldId, fieldLabel, timestamp, eventData } = job.data;
-    console.log("Before storing", formId, userId, eventType, value, fieldId, fieldLabel, timestamp);
     
     // Store in regular Analytics collection
     await Analytics.create({ formId, userId, eventType, value, fieldId, fieldLabel, timestamp, eventData });

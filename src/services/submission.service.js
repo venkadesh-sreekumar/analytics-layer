@@ -2,7 +2,6 @@ import { Submission } from "../models/submission.model.js";
 
 export const createSubmission = async (submissionData) => {
   try {
-    console.log("Checking submissionData", submissionData);
     const submission = new Submission(submissionData);
     await submission.save();
     return submission;
@@ -13,7 +12,6 @@ export const createSubmission = async (submissionData) => {
 
 export const getSubmissionsByFormId = async (formId, limit = 100, skip = 0) => {
   try {
-    console.log("Checking formId", formId, typeof formId);
     const submissions = await Submission.find({ formId });
     return submissions;
   } catch (error) {
